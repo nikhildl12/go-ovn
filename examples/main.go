@@ -98,4 +98,38 @@ func main() {
 	ocmd = ovndbapi.LSWDel("ls1")
 	ovndbapi.Execute(ocmd)
 
+	fmt.Printf("\nAdding LB to OVN")
+	ocmd = ovndbapi.LBAdd("lb1", "192.168.0.19:80", "tcp", []string{"10.0.0.11:80","10.0.0.12:80"})
+	err := ovndbapi.Execute(ocmd)
+	if err != nil {
+		fmt.Printf("\nAdding LB OVN failed with err %v", err)
+		return
+	}
+	fmt.Printf("\nAdding LB to OVN Done")
+
+
+	fmt.Printf("\nUpdating LB to OVN")
+	ocmd = ovndbapi.LBUpdate("lb1", "192.168.0.10:80", "tcp", []string{"10.10.10.127:8080","10.10.10.120:8080"})
+	err = ovndbapi.Execute(ocmd)
+	if err != nil {
+		fmt.Printf("\nUpdating LB OVN failed with err %v", err)
+		return
+	}
+	fmt.Printf("\nUpdating LB to OVN done")
+
+	fmt.Printf("\nGettting LB by name")
+	lb := ovndbapi.GetLB("lb1")
+	if len(lb) != 1 {
+		fmt.Printf("err getting lbs, total:%v", len(lb))
+	}
+	fmt.Printf("\n Lb found:%+v", lb[0])
+
+	fmt.Printf("\nDeleting LB")
+	ocmd = ovndbapi.LBDel("lb1")
+	err = ovndbapi.Execute(ocmd)
+	if err != nil {
+		fmt.Printf("err executing command:%v", err)
+		return
+	}
+	fmt.Printf("\nDeleting LB Done")
 }

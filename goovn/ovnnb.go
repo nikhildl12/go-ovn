@@ -63,7 +63,7 @@ func newNBBySocket(socketfile string, callback OVNSignal) (*OVNDB, error) {
 
 func newNBByServer(server string, port int, callback OVNSignal) (*OVNDB, error) {
 	odb, err := newNBClient("", TCP, server, port)
-	if err != nil {
+	if err == nil {
 		return &OVNDB{newNBImp(odb, callback)}, nil
 	} else {
 		return nil, err
@@ -90,6 +90,18 @@ func (odb *OVNDB) LSPDel(lsp string) *OvnCommand {
 	return odb.imp.lspDelImp(lsp)
 }
 
+
+func (odb *OVNDB) LBAdd(name string, vipPort string, protocol string, addrs []string) *OvnCommand {
+	return odb.imp.lbAddImpl(name, vipPort, protocol, addrs)
+}
+
+func (odb *OVNDB) LBUpdate(name string, vipPort string, protocol string, addrs []string) *OvnCommand {
+	return odb.imp.lbUpdateImpl(name, vipPort, protocol, addrs)
+}
+
+func (odb *OVNDB) LBDel(name string) *OvnCommand {
+	return odb.imp.lbDelImp(name)
+}
 
 func (odb *OVNDB) LSPSetAddress(lsp string, addresses ...string) *OvnCommand {
 	return odb.imp.lspSetAddressImp(lsp, addresses...)
@@ -135,6 +147,7 @@ func (odb *OVNDB) GetACLsBySwitch(lsw string) []*ACL {
 	return odb.imp.GetACLsBySwitch(lsw)
 }
 
+
 func (odb *OVNDB) GetAddressSets() []*AddressSet {
 	return odb.imp.GetAddressSets()
 }
@@ -142,6 +155,11 @@ func (odb *OVNDB) GetAddressSets() []*AddressSet {
 func (odb *OVNDB) GetASByName(name string) *AddressSet {
 	return odb.imp.GetASByName(name)
 }
+
+func (odb *OVNDB) GetLB(name string) []*LoadBalancer {
+	return odb.imp.GetLB(name)
+}
+
 
 func (odb *OVNDB) SetCallBack(callback OVNSignal) {
 	odb.imp.callback = callback
